@@ -79,17 +79,17 @@
       },
       "locked": {
         "dir": "partitions/channels/unstable",
-        "lastModified": 1777298952,
-        "narHash": "sha256-b6fDcXhdMyHyQFCxoI4O5I+vQoAeaHwKffaTP8msepU=",
+        "lastModified": 1777814889,
+        "narHash": "sha256-U64t9T1YK4RQdwcQsdtFfy+0X4wQcKmAtMWgpsIP6ZA=",
         "owner": "nixology",
-        "repo": "core",
-        "rev": "772b3ca58fe4d72a0967b519c452390c76a48bba",
+        "repo": "core.nix",
+        "rev": "756737f18aca2b9b1fb217cb625c1a5a336f2dcf",
         "type": "github"
       },
       "original": {
         "dir": "partitions/channels/unstable",
         "owner": "nixology",
-        "repo": "core",
+        "repo": "core.nix",
         "type": "github"
       }
     },

@@ -5,7 +5,7 @@
   outputs = { ... }: { };
 
   inputs = {
-    core-flake-schemas.url = "github:nixology/core?dir=partitions/schemas";
+    core-flake-schemas.url = "github:nixology/core.nix?dir=partitions/schemas";
     flake-schemas.follows = "core-flake-schemas/flake-schemas";
   };
 }
