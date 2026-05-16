@@ -14,9 +14,7 @@ importing modules using `modulesIn` function.
 
 ```nix
 {
-  inputs = {
-    flake.url = "github:nixology/flake.nix";
-  };
+  inputs.flake.url = "github:nixology/flake.nix";
 
   outputs =
     inputs: with inputs.flake.lib; mkFlake { inherit inputs; } { imports = modulesIn ./modules; };
