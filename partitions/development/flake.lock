@@ -62,11 +62,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1773201692,
-        "narHash": "sha256-xtsQYO6twTbzxKIvTZcLgZeAkbL5RAcNnJboSjf+E78=",
-        "rev": "b6067cc0127d4db9c26c79e4de0513e58d0c40c9",
+        "lastModified": 1778869304,
+        "narHash": "sha256-vZOcDniDPc1cS8A4Xi5YE6AGyPIvEpy4GMyayA3SWIM=",
+        "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
         "type": "tarball",
-        "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.05pre961687.b6067cc0127d/nixexprs.tar.xz"
+        "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.05pre998534.d233902339c0/nixexprs.tar.xz"
       },
       "original": {
         "type": "tarball",
@@ -79,11 +79,11 @@
       },
       "locked": {
         "dir": "partitions/channels/nixpkgs-unstable",
-        "lastModified": 1779123955,
-        "narHash": "sha256-rUE/FvXrgQzSZUngoOmANGzKtXvSP5qLZlbTCLrLH/c=",
+        "lastModified": 1779132225,
+        "narHash": "sha256-2KkDjNOjflgV29nPIgez20kO0+7e64q47IZHzaWTvJY=",
         "owner": "nixology",
         "repo": "core.nix",
-        "rev": "ea5330da23c48f8e395565341f7a3227992d0a2b",
+        "rev": "b883db7e58e2ba2a91f6b20b2c74f36e176dfd2f",
         "type": "github"
       },
       "original": {
