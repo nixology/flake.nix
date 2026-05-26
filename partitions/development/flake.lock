@@ -82,11 +82,11 @@
       },
       "locked": {
         "dir": "partitions/channels/nixpkgs-unstable",
-        "lastModified": 1779288791,
-        "narHash": "sha256-8yRBgPAsnAfjJbfh/D36MT6BFpAHNQ2ZzjqRWuG4fyg=",
+        "lastModified": 1779785819,
+        "narHash": "sha256-8Q6m6Iyf2hvotSimNdkamK9BhvaroIxrDLgp9yVkj04=",
         "owner": "nixology",
         "repo": "core.nix",
-        "rev": "81cbff4ea7db15ec98d66123ba242b01cca38a8b",
+        "rev": "8ac1bb9336c239333189b8a1bad1c0f1ee1353c9",
         "type": "github"
       },
       "original": {
