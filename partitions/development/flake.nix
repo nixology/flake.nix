@@ -5,16 +5,16 @@
   outputs = { ... }: { };
 
   inputs = {
-    pkgs.url = "github:nixology/core.nix?dir=partitions/channels/nixpkgs-unstable";
+    main.url = "path:../..";
 
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
-      inputs.nixpkgs.follows = "pkgs/nixpkgs";
+      inputs.nixpkgs.follows = "main/core/nixpkgs";
     };
 
     treefmt = {
       url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "pkgs/nixpkgs";
+      inputs.nixpkgs.follows = "main/core/nixpkgs";
     };
   };
 }
