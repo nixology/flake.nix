@@ -1,37 +1,47 @@
 { config, inputs, ... }:
 let
-  inherit (config.partitions.development.extraInputs) git-hooks;
+  gitHooks = config.partitions.development.extraInputs.git-hooks;
 
-  module = {
-    imports = [ git-hooks.flakeModule ];
+  implementation = {
+    imports = [
+      gitHooks.flakeModule
+    ];
+
     perSystem =
       { config, lib, ... }:
-      with config.pre-commit;
+      let
+        cfg = config.pre-commit;
+      in
       {
-        shellEnvs = lib.mkIf (config.pre-commit.settings.enabledPackages != [ ]) {
-          default = {
-            packages = settings.enabledPackages;
-            shellHook = shellHook;
-          };
+        shellEnvs.default = lib.mkIf (cfg.settings.enabledPackages != [ ]) {
+          packages = cfg.settings.enabledPackages;
+          shellHook = cfg.shellHook;
         };
       };
   };
 
-  partitionedModule = {
-    partitions.development = { inherit module; };
-  };
-
-  component = {
-    inherit module;
-    dependencies = with inputs.self.components; [
-      nixology.extra.shellEnvs
-      nixology.systems.default
-    ];
+  partitionedImplementation = {
+    partitions.development.module = implementation;
   };
 in
 {
-  imports = [ partitionedModule ];
+  imports = [
+    partitionedImplementation
+  ];
+
   flake.components = {
-    nixology.tools.git-hooks = component;
+    nixology.tools.git-hooks = {
+      inherit implementation;
+
+      dependencies = with inputs.self.components; [
+        nixology.extra.shellEnvs
+        nixology.systems.default
+      ];
+
+      meta = {
+        description = "Integrate git-hooks.nix pre-commit hooks with the default development shell.";
+        shortDescription = "git hooks tooling";
+      };
+    };
   };
 }

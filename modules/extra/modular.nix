@@ -1,6 +1,6 @@
 { inputs, ... }:
 let
-  module =
+  implementation =
     { config, lib, ... }:
     let
       cfg = config;
@@ -230,14 +230,14 @@ let
     };
 
   component = {
-    inherit module;
+    inherit implementation;
     dependencies = with inputs.self.components; [
       nixology.flake.modules
     ];
   };
 in
 {
-  imports = [ module ];
+  imports = [ implementation ];
   flake.components = {
     nixology.extra.modular = component;
   };

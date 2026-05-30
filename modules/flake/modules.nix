@@ -1,10 +1,11 @@
 { inputs, ... }:
 let
-  module = {
-    imports = with inputs.core.inputs.flake-parts.flakeModules; [ modules ];
-    config = {
-      flake.schemas.modules = schema;
-    };
+  implementation = {
+    imports = [
+      inputs.core.inputs.flake-parts.flakeModules.modules
+    ];
+
+    config.flake.schemas.modules = schema;
   };
 
   schema = {
@@ -12,22 +13,24 @@ let
     doc = ''
       The `modules` flake output contains modules for any module system.
     '';
-    inventory = _output: { what = "modules for use by other module systems"; };
-  };
-
-  component = {
-    inherit module;
-    dependencies = with inputs.self.components; [
-      nixology.core.schemas
-    ];
-    meta = {
-      shortDescription = "modules for use by other module systems";
+    inventory = _output: {
+      what = "modules for use by other module systems";
     };
   };
 in
 {
-  imports = [ module ];
   flake.components = {
-    nixology.flake.modules = component;
+    nixology.flake.modules = {
+      inherit implementation;
+
+      dependencies = with inputs.self.components; [
+        nixology.core.schemas
+      ];
+
+      meta = {
+        description = "Provide the `modules` flake output for modules usable by any module system.";
+        shortDescription = "generic modules";
+      };
+    };
   };
 }

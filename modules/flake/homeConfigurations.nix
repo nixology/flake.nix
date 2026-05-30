@@ -2,58 +2,53 @@
 let
   inherit (config.partitions.schemas.extraInputs) flake-schemas;
 
-  module =
+  implementation =
     { lib, ... }:
-    with lib;
     {
-      options = {
-        flake.homeConfigurations = mkOption {
-          type = types.lazyAttrsOf types.raw;
-          default = { };
-          description = ''
-            Instantiated Home Manager configurations. Used by `home-manager`.
+      options.flake.homeConfigurations = lib.mkOption {
+        type = lib.types.lazyAttrsOf lib.types.raw;
+        default = { };
+        description = ''
+          Instantiated Home Manager configurations. Used by `home-manager`.
 
-            `homeConfigurations` is for specific users. If you want to expose
-            reusable configurations, add them to [`homeModules`](#opt-flake.homeModules)
-            in the form of modules (no `home-manager.lib.homeManagerConfiguration`), so that you can reference
-            them in this or another flake's `homeConfigurations`.
-          '';
-          example = literalExpression ''
-            {
-              my-machine = inputs.home-manager.lib.homeManagerConfiguration {
-                pkgs = import nixpkgs { system = "x86_64-linux"; };
-                modules = [
-                  inputs.self.homeModules.bash
-                  {
-                    home.username = "alice";
-                    home.homeDirectory = "/home/alice";
-                    home.stateVersion = "25.11";
-                  }
-                ];
-              };
-            }
-          '';
-        };
+          `homeConfigurations` is for specific users. For reusable
+          configurations, expose modules through `homeModules` instead.
+        '';
+        example = lib.literalExpression ''
+          {
+            alice = inputs.home-manager.lib.homeManagerConfiguration {
+              pkgs = import inputs.nixpkgs { system = "x86_64-linux"; };
+              modules = [
+                inputs.self.homeModules.bash
+                {
+                  home.username = "alice";
+                  home.homeDirectory = "/home/alice";
+                  home.stateVersion = "25.11";
+                }
+              ];
+            };
+          }
+        '';
       };
 
-      config = {
-        flake.schemas = { inherit (flake-schemas.schemas) homeConfigurations; };
+      config.flake.schemas = {
+        inherit (flake-schemas.schemas) homeConfigurations;
       };
     };
-
-  component = {
-    inherit module;
-    dependencies = with inputs.self.components; [
-      nixology.core.schemas
-    ];
-    meta = {
-      description = "Instantiated Home Manager configurations for specific users. Used by `home-manager`.";
-      shortDescription = "home manager configurations";
-    };
-  };
 in
 {
   flake.components = {
-    nixology.flake.homeConfigurations = component;
+    nixology.flake.homeConfigurations = {
+      inherit implementation;
+
+      dependencies = with inputs.self.components; [
+        nixology.core.schemas
+      ];
+
+      meta = {
+        description = "Provide instantiated Home Manager configurations for specific users.";
+        shortDescription = "home manager configurations";
+      };
+    };
   };
 }

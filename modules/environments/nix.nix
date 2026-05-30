@@ -1,6 +1,6 @@
 { inputs, ... }:
 let
-  module = {
+  implementation = {
     perSystem =
       {
         config,
@@ -9,46 +9,58 @@ let
         ...
       }:
       {
-        shellEnvs.nix = {
-          packages = with pkgs; [ nix-output-monitor ];
-        };
+        shellEnvs.nix.packages = [
+          pkgs.nix-output-monitor
+        ];
+
         treefmt.programs = {
           nixfmt.enable = lib.mkDefault true;
           deadnix.enable = lib.mkDefault true;
+          zizmor.enable = lib.mkDefault true;
+
           nixf-diagnose = {
             enable = lib.mkDefault true;
-            excludes = lib.mkDefault [ config.treefmt.projectRootFile ];
+            excludes = lib.mkDefault [
+              config.treefmt.projectRootFile
+            ];
           };
+
           yamlfmt = {
             enable = lib.mkDefault true;
-            settings = {
-              formatter = {
-                type = "basic";
-                retain_line_breaks = true;
-                trim_trailing_whitespace = true;
-              };
+            settings.formatter = {
+              type = "basic";
+              retain_line_breaks = true;
+              trim_trailing_whitespace = true;
             };
           };
-          zizmor.enable = lib.mkDefault true;
         };
       };
   };
 
-  partitionedModule = {
-    partitions.development = { inherit module; };
-  };
-
-  component = {
-    inherit module;
-    dependencies = with inputs.self.components; [
-      nixology.extra.shellEnvs
-      nixology.tools.treefmt
-    ];
+  partitionedImplementation = {
+    partitions.development = {
+      module = implementation;
+    };
   };
 in
 {
-  imports = [ partitionedModule ];
+  imports = [
+    partitionedImplementation
+  ];
+
   flake.components = {
-    nixology.environments.nix = component;
+    nixology.environments.nix = {
+      inherit implementation;
+
+      dependencies = with inputs.self.components; [
+        nixology.extra.shellEnvs
+        nixology.tools.treefmt
+      ];
+
+      meta = {
+        description = "Provide a Nix development environment with formatting and diagnostic tools.";
+        shortDescription = "Nix development environment";
+      };
+    };
   };
 }

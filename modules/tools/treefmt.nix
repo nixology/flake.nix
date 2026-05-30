@@ -1,28 +1,31 @@
 { config, inputs, ... }:
 let
-  inherit (config.partitions.development.extraInputs) treefmt;
+  implementation = config.partitions.development.extraInputs.treefmt.flakeModule;
 
-  module = {
-    imports = [ treefmt.flakeModule ];
-  };
-
-  partitionedModule = {
-    partitions.development = { inherit module; };
-  };
-
-  component = {
-    inherit module;
-    dependencies = with inputs.self.components; [
-      nixology.extra.shellEnvs
-      nixology.flake.checks
-      nixology.flake.formatter
-      nixology.systems.default
-    ];
+  partitionedImplementation = {
+    partitions.development.module = implementation;
   };
 in
 {
-  imports = [ partitionedModule ];
+  imports = [
+    partitionedImplementation
+  ];
+
   flake.components = {
-    nixology.tools.treefmt = component;
+    nixology.tools.treefmt = {
+      inherit implementation;
+
+      dependencies = with inputs.self.components; [
+        nixology.extra.shellEnvs
+        nixology.flake.checks
+        nixology.flake.formatter
+        nixology.systems.default
+      ];
+
+      meta = {
+        description = "Integrate treefmt-nix formatting checks and formatter outputs.";
+        shortDescription = "treefmt tooling";
+      };
+    };
   };
 }

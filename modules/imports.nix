@@ -7,6 +7,6 @@
       nixology.core.debug
       nixology.core.lib
       nixology.core.partitions
-      nixology.core.schemas
+      #      nixology.core.schemas
     ];
 }

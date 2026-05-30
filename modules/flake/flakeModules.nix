@@ -1,10 +1,11 @@
 { inputs, ... }:
 let
-  module = {
-    imports = with inputs.core.inputs.flake-parts.flakeModules; [ flakeModules ];
-    config = {
-      flake.schemas.flakeModules = schema;
-    };
+  implementation = {
+    imports = [
+      inputs.core.inputs.flake-parts.flakeModules.flakeModules
+    ];
+
+    config.flake.schemas.flakeModules = schema;
   };
 
   schema = {
@@ -12,21 +13,24 @@ let
     doc = ''
       The `flakeModules` flake output contains flake-parts modules for use by other flakes.
     '';
-    inventory = _output: { what = "flake-parts modules for use by other flakes"; };
-  };
-
-  component = {
-    inherit module;
-    dependencies = with inputs.self.components; [
-      nixology.core.schemas
-    ];
-    meta = {
-      shortDescription = "flake-parts modules for use by other flakes";
+    inventory = _output: {
+      what = "flake-parts modules for use by other flakes";
     };
   };
 in
 {
   flake.components = {
-    nixology.flake.flakeModules = component;
+    nixology.flake.flakeModules = {
+      inherit implementation;
+
+      dependencies = with inputs.self.components; [
+        nixology.core.schemas
+      ];
+
+      meta = {
+        description = "Provide the `flakeModules` flake output for reusable flake-parts modules.";
+        shortDescription = "flake-parts modules";
+      };
+    };
   };
 }

@@ -1,62 +1,62 @@
 { config, inputs, ... }:
 let
   inherit (config.partitions.schemas.extraInputs) flake-schemas;
-
   moduleLocation = "${inputs.self.outPath}/flake.nix";
 
-  module =
+  implementation =
     { lib, ... }:
-    with lib;
     {
-      options = {
-        flake.darwinModules = mkOption {
-          type = types.lazyAttrsOf types.deferredModule;
-          default = { };
-          apply = mapAttrs (
-            k: v: {
-              _class = "darwin";
-              _file = "${toString moduleLocation}#darwinModules.${k}";
-              imports = [ v ];
-            }
-          );
-          description = ''
-            Darwin modules.
+      options.flake.darwinModules = lib.mkOption {
+        type = lib.types.lazyAttrsOf lib.types.deferredModule;
+        default = { };
 
-            You may use this for reusable pieces of configuration, service modules, etc.
-          '';
-          example = ''
+        apply = lib.mapAttrs (
+          name: module: {
+            _class = "darwin";
+            _file = "${moduleLocation}#darwinModules.${name}";
+            imports = [ module ];
+          }
+        );
+
+        description = ''
+          Darwin modules.
+
+          Use this for reusable Darwin configuration, service modules, and
+          other nix-darwin modules.
+        '';
+
+        example = lib.literalExpression ''
+          {
             configuration = { pkgs, ... }: {
-              # Define system packages
               environment.systemPackages = [
                 pkgs.vim
                 pkgs.wget
               ];
 
-              # Configure the shell
               programs.zsh.enable = true;
             };
-          '';
-        };
+          }
+        '';
       };
 
-      config = {
-        flake.schemas = { inherit (flake-schemas.schemas) darwinModules; };
+      config.flake.schemas = {
+        inherit (flake-schemas.schemas) darwinModules;
       };
     };
-
-  component = {
-    inherit module;
-    dependencies = with inputs.self.components; [
-      nixology.core.schemas
-    ];
-    meta = {
-      description = "Darwin modules";
-      shortDescription = "darwin modules";
-    };
-  };
 in
 {
   flake.components = {
-    nixology.flake.darwinModules = component;
+    nixology.flake.darwinModules = {
+      inherit implementation;
+
+      dependencies = with inputs.self.components; [
+        nixology.core.schemas
+      ];
+
+      meta = {
+        description = "Provide reusable nix-darwin modules through the `darwinModules` flake output.";
+        shortDescription = "darwin modules";
+      };
+    };
   };
 }

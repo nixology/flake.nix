@@ -2,49 +2,51 @@
 let
   inherit (config.partitions.schemas.extraInputs) flake-schemas;
 
-  parts =
+  descriptions = {
+    apps = "runnable programs";
+    checks = "derivations for testing evaluation of this flake";
+    devShells = "development shells";
+    formatter = "project formatter";
+    legacyPackages = "nested attribute sets of nixpkgs packages";
+    nixosConfigurations = "NixOS configurations";
+    nixosModules = "NixOS modules";
+    overlays = "nixpkgs overlays";
+    packages = "nixpkgs packages";
+  };
+
+  mkComponent =
+    name: shortDescription:
     let
-      modules = {
-        apps = "runnable programs";
-        checks = "derivations for testing evaluation of this flake";
-        devShells = "derivations that provide development shells";
-        formatter = "package to use to format the project";
-        legacyPackages = "nested attribute sets of nixpkgs packages";
-        nixosConfigurations = "nixos configurations";
-        nixosModules = "nixos modules";
-        overlays = "nixpkgs overlays";
-        packages = "nixpkgs packages";
+      implementation = {
+        imports = [
+          "${inputs.core.inputs.flake-parts}/modules/${name}.nix"
+        ];
+
+        config.flake.schemas.${name} = flake-schemas.schemas.${name};
       };
     in
-    builtins.mapAttrs (
-      name: description:
-      let
-        module = {
-          imports = [ "${inputs.core.inputs.flake-parts}/modules/${name}.nix" ];
-          config = {
-            flake.schemas.${name} = flake-schemas.schemas.${name};
-          };
-        };
+    {
+      inherit implementation;
 
-        component = {
-          inherit module;
-          dependencies = with inputs.self.components; [
-            nixology.core.schemas
-          ];
-          meta = {
-            shortDescription = description;
-          };
-        };
-      in
-      component
-    ) modules;
+      dependencies = with inputs.self.components; [
+        nixology.core.schemas
+      ];
+
+      meta = {
+        description = "Provide the `${name}` flake output for ${shortDescription}.";
+        inherit shortDescription;
+      };
+    };
+
+  parts = builtins.mapAttrs mkComponent descriptions;
 in
 {
-  imports = map (component: component.module) [
+  imports = map (component: component.implementation) [
     parts.checks
     parts.devShells
     parts.formatter
   ];
+
   flake.components = {
     nixology.flake = parts;
   };

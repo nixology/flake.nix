@@ -1,61 +1,62 @@
 { config, inputs, ... }:
 let
   inherit (config.partitions.schemas.extraInputs) flake-schemas;
-
   moduleLocation = "${inputs.self.outPath}/flake.nix";
 
-  module =
+  implementation =
     { lib, ... }:
-    with lib;
     {
-      options = {
-        flake.homeModules = mkOption {
-          type = types.lazyAttrsOf types.deferredModule;
-          default = { };
-          apply = mapAttrs (
-            k: v: {
-              _class = "home";
-              _file = "${toString moduleLocation}#homeModules.${k}";
-              imports = [ v ];
-            }
-          );
-          description = ''
-            Home Manager modules.
+      options.flake.homeModules = lib.mkOption {
+        type = lib.types.lazyAttrsOf lib.types.deferredModule;
+        default = { };
 
-            You may use this for reusable pieces of configuration, service modules, etc.
-          '';
-          example = literalExpression ''
-            homeModules.bash= { pkgs, ... }: {
+        apply = lib.mapAttrs (
+          name: module: {
+            _class = "home";
+            _file = "${moduleLocation}#homeModules.${name}";
+            imports = [ module ];
+          }
+        );
+
+        description = ''
+          Home Manager modules.
+
+          Use this for reusable Home Manager configuration, service modules, and
+          other home-manager modules.
+        '';
+
+        example = lib.literalExpression ''
+          {
+            bash = { pkgs, ... }: {
               programs.bash = {
                 enable = true;
-                shellAliases = {
-                  ll = "ls -l";
-                };
+                shellAliases.ll = "ls -l";
               };
+
               home.packages = [ pkgs.hello ];
             };
-          '';
-        };
+          }
+        '';
       };
 
-      config = {
-        flake.schemas = { inherit (flake-schemas.schemas) homeModules; };
+      config.flake.schemas = {
+        inherit (flake-schemas.schemas) homeModules;
       };
     };
-
-  component = {
-    inherit module;
-    dependencies = with inputs.self.components; [
-      nixology.core.schemas
-    ];
-    meta = {
-      description = "Home Manager modules";
-      shortDescription = "home manager modules";
-    };
-  };
 in
 {
   flake.components = {
-    nixology.flake.homeModules = component;
+    nixology.flake.homeModules = {
+      inherit implementation;
+
+      dependencies = with inputs.self.components; [
+        nixology.core.schemas
+      ];
+
+      meta = {
+        description = "Provide reusable Home Manager modules through the `homeModules` flake output.";
+        shortDescription = "home manager modules";
+      };
+    };
   };
 }

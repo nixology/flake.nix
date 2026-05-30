@@ -1,16 +1,16 @@
 { inputs, ... }:
 let
-  module = with inputs.core.inputs.flake-parts.flakeModules; easyOverlay;
-
-  component = {
-    inherit module;
-    meta = {
-      shortDescription = "module for easy overlay management";
-    };
-  };
+  implementation = inputs.core.inputs.flake-parts.flakeModules.easyOverlay;
 in
 {
   flake.components = {
-    nixology.extra.easyOverlay = component;
+    nixology.extra.easyOverlay = {
+      inherit implementation;
+
+      meta = {
+        description = "Expose the upstream flake-parts easyOverlay module as a nixology component.";
+        shortDescription = "easy overlay management";
+      };
+    };
   };
 }
