@@ -1,48 +1,45 @@
-{ inputs, ... }:
+local@{ ... }:
 let
-  implementation =
-    { flake-parts-lib, lib, ... }:
+  implementation = { flake-parts-lib, ... }: with local.lib;
     {
       options.perSystem = flake-parts-lib.mkPerSystemOption (
-        { pkgs, ... }:
+        { pkgs, ... }: with types;
         {
-          options.shellEnvs = lib.mkOption {
-            type = lib.types.lazyAttrsOf (
-              lib.types.submodule {
-                options = {
-                  inputsFrom = lib.mkOption {
-                    type = lib.types.listOf lib.types.package;
-                    default = [ ];
-                    description = "Packages whose inputs and shell hooks are included.";
-                  };
-
-                  mkShellOverrides = lib.mkOption {
-                    type = lib.types.lazyAttrsOf lib.types.anything;
-                    default = { };
-                    description = "Overrides applied to `pkgs.mkShell`.";
-                  };
-
-                  packages = lib.mkOption {
-                    type = lib.types.listOf lib.types.package;
-                    default = [ ];
-                    description = "Packages to include in the development shell.";
-                  };
-
-                  shellHook = lib.mkOption {
-                    type = lib.types.lines;
-                    default = "";
-                    description = "Shell hook script run when entering the shell.";
-                  };
-
-                  stdenv = lib.mkOption {
-                    type = lib.types.package;
-                    default = pkgs.stdenvNoCC;
-                    defaultText = lib.literalExpression "pkgs.stdenvNoCC";
-                    description = "The stdenv used for the development shell.";
-                  };
+          options.shellEnvs = mkOption {
+            type = lazyAttrsOf (submodule {
+              options = {
+                inputsFrom = mkOption {
+                  type = listOf package;
+                  default = [ ];
+                  description = "Packages whose inputs and shell hooks are included.";
                 };
-              }
-            );
+
+                mkShellOverrides = mkOption {
+                  type = lazyAttrsOf anything;
+                  default = { };
+                  description = "Overrides applied to `pkgs.mkShell`.";
+                };
+
+                packages = mkOption {
+                  type = listOf package;
+                  default = [ ];
+                  description = "Packages to include in the development shell.";
+                };
+
+                shellHook = mkOption {
+                  type = lines;
+                  default = "";
+                  description = "Shell hook script run when entering the shell.";
+                };
+
+                stdenv = mkOption {
+                  type = package;
+                  default = pkgs.stdenvNoCC;
+                  defaultText = literalExpression "pkgs.stdenvNoCC";
+                  description = "The stdenv used for the development shell.";
+                };
+              };
+            });
             default = { };
             description = "Development shell environments.";
           };
@@ -50,14 +47,10 @@ let
       );
 
       config.perSystem =
-        {
-          config,
-          lib,
-          pkgs,
-          ...
-        }:
-        lib.mkIf (config.shellEnvs != { }) {
-          devShells = lib.mapAttrs (
+        module@{ pkgs, ... }:
+        with local.lib;
+        mkIf (module.config.shellEnvs != { }) {
+          devShells = mapAttrs (
             name: shellEnv:
             pkgs.mkShell.override shellEnv.mkShellOverrides {
               inherit name;
@@ -68,7 +61,7 @@ let
                 stdenv
                 ;
             }
-          ) config.shellEnvs;
+          ) module.config.shellEnvs;
         };
     };
 
@@ -85,7 +78,7 @@ in
     nixology.extra.shellEnvs = {
       inherit implementation;
 
-      dependencies = with inputs.self.components; [
+      dependencies = with local.inputs.self.components; [
         nixology.systems.default
         nixology.flake.devShells
       ];

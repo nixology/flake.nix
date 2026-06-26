@@ -1,8 +1,8 @@
-{ inputs, ... }:
+local@{ ... }:
 let
   implementation = {
     imports = [
-      inputs.core.inputs.flake-parts.flakeModules.flakeModules
+      local.inputs.core.inputs.flake-parts.flakeModules.flakeModules
     ];
 
     config.flake.schemas.flakeModules = schema;
@@ -23,7 +23,7 @@ in
     nixology.flake.flakeModules = {
       inherit implementation;
 
-      dependencies = with inputs.self.components; [
+      dependencies = with local.inputs.self.components; [
         nixology.core.schemas
       ];
 

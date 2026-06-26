@@ -1,6 +1,6 @@
-{ config, inputs, ... }:
+local@{ ... }:
 let
-  gitHooks = config.partitions.development.extraInputs.git-hooks;
+  gitHooks = local.config.partitions.development.extraInputs.git-hooks;
 
   implementation = {
     imports = [
@@ -8,12 +8,13 @@ let
     ];
 
     perSystem =
-      { config, lib, ... }:
+      module@{ ... }:
+      with local.lib;
       let
-        cfg = config.pre-commit;
+        cfg = module.config.pre-commit;
       in
       {
-        shellEnvs.default = lib.mkIf (cfg.settings.enabledPackages != [ ]) {
+        shellEnvs.default = mkIf (cfg.settings.enabledPackages != [ ]) {
           packages = cfg.settings.enabledPackages;
           shellHook = cfg.shellHook;
         };
@@ -33,7 +34,7 @@ in
     nixology.tools.git-hooks = {
       inherit implementation;
 
-      dependencies = with inputs.self.components; [
+      dependencies = with local.inputs.self.components; [
         nixology.extra.shellEnvs
         nixology.systems.default
       ];

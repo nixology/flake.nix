@@ -1,9 +1,10 @@
-{ inputs, ... }:
+local@{ ... }:
 let
   implementation =
-    { config, lib, ... }:
+    module@{ ... }:
+    with local.lib;
     let
-      cfg = config;
+      cfg = module.config;
 
       # Flattens a tree of components into a single-level attribute set,
       # with keys representing the path to each leaf node, separated by dots.
@@ -13,9 +14,9 @@ let
           recurse =
             path: value:
             if isLeaf value then
-              { ${lib.concatStringsSep "." path} = value; }
-            else if lib.isAttrs value then
-              lib.foldl' lib.mergeAttrs { } (lib.mapAttrsToList (name: v: recurse (path ++ [ name ]) v) value)
+              { ${concatStringsSep "." path} = value; }
+            else if isAttrs value then
+              foldl' mergeAttrs { } (mapAttrsToList (name: v: recurse (path ++ [ name ]) v) value)
             else
               { };
         in
@@ -26,11 +27,11 @@ let
         attrsOfAttrs:
         let
           outerKeys = builtins.attrNames attrsOfAttrs;
-          innerKeys = lib.unique (lib.concatMap builtins.attrNames (builtins.attrValues attrsOfAttrs));
+          innerKeys = unique (concatMap builtins.attrNames (builtins.attrValues attrsOfAttrs));
         in
-        lib.genAttrs innerKeys (
+        genAttrs innerKeys (
           innerKey:
-          lib.genAttrs outerKeys (
+          genAttrs outerKeys (
             outerKey:
             if builtins.hasAttr innerKey (attrsOfAttrs.${outerKey}) then
               attrsOfAttrs.${outerKey}.${innerKey}
@@ -46,57 +47,53 @@ let
     in
     {
       options.mod =
+        with types;
         let
-          data =
-            with lib.types;
-            submoduleWith {
-              modules = [
-                {
-                  freeformType =
-                    let
-                      message = ''
-                        No option has been declared for this mod data attribute, so its definitions can't be merged automatically.
-                        Possible solutions:
-                          - Load a module that defines this mod data attribute
-                          - Declare an option for this mod data attribute
-                          - Make sure the data attribute is spelled correctly
-                          - Define the value only once, with a single definition in a single module
-                      '';
-                    in
-                    lazyAttrsOf (unique { inherit message; } raw);
-                }
-              ];
-            };
-
-          evaluator =
-            with lib.types;
-            submodule (
-              { ... }:
+          data = submoduleWith {
+            modules = [
               {
-                options = {
-                  evaluator = lib.mkOption {
-                    type = functionTo attrs;
-                    description = "Function for evaluating an aggregate module.";
-                  };
-                  aggregate = lib.mkOption {
-                    type = str;
-                    description = "Aggregate module to be evaluated.";
-                  };
-                  otherArgs = lib.mkOption {
-                    type = attrs;
-                    description = "Additional arguments to be passed to the evaluator function.";
-                    default = { };
-                  };
-                };
+                freeformType =
+                  let
+                    message = ''
+                      No option has been declared for this mod data attribute, so its definitions can't be merged automatically.
+                      Possible solutions:
+                        - Load a module that defines this mod data attribute
+                        - Declare an option for this mod data attribute
+                        - Make sure the data attribute is spelled correctly
+                        - Define the value only once, with a single definition in a single module
+                    '';
+                  in
+                  lazyAttrsOf (unique { inherit message; } raw);
               }
-            );
+            ];
+          };
+
+          evaluator = submodule (
+            { ... }:
+            {
+              options = {
+                evaluator = mkOption {
+                  type = functionTo attrs;
+                  description = "Function for evaluating an aggregate module.";
+                };
+                aggregate = mkOption {
+                  type = str;
+                  description = "Aggregate module to be evaluated.";
+                };
+                otherArgs = mkOption {
+                  type = attrs;
+                  description = "Additional arguments to be passed to the evaluator function.";
+                  default = { };
+                };
+              };
+            }
+          );
 
           components =
-            with lib.types;
             let
               components = submodule {
                 options = {
-                  _ = lib.mkOption {
+                  _ = mkOption {
                     description = "Nested component modules.";
                     type = components;
                     visible = false;
@@ -110,12 +107,11 @@ let
             ]);
 
           component =
-            with lib.types;
             addCheck (attrsOf deferredModule) (
               component:
               let
                 classes = builtins.attrNames component;
-                unknownClasses = lib.filter (class: !lib.elem class cfg.mod.classes) classes;
+                unknownClasses = filter (class: !elem class cfg.mod.classes) classes;
               in
               unknownClasses == [ ]
             )
@@ -124,14 +120,14 @@ let
               description = ''
 
                 {
-                  ${lib.concatMapStringsSep "\n  " (
+                  ${concatMapStringsSep "\n  " (
                     class: "${class} = <module>; # optional - only for ${class} modules"
                   ) cfg.mod.classes}
                 }
 
                 Notes:
                   - Make sure the attribute key is spelled correctly [${
-                    lib.concatMapStringsSep ", " (class: class) cfg.mod.classes
+                    concatMapStringsSep ", " (class: class) cfg.mod.classes
                   }]
                   - Add the new class name to `mod.classes` if needed
 
@@ -139,13 +135,13 @@ let
             };
         in
         {
-          data = lib.mkOption {
+          data = mkOption {
             type = data;
             description = "Metadata for sharing across modules of diffrent module systems.";
           };
 
-          classes = lib.mkOption {
-            type = with lib.types; listOf str;
+          classes = mkOption {
+            type = listOf str;
             description = "List of valid module classes.";
             default = [
               "flake"
@@ -155,19 +151,19 @@ let
             ];
           };
 
-          component = lib.mkOption {
+          component = mkOption {
             type = components;
             description = "Collection of component modules.";
             default = { };
           };
 
-          aggregate = lib.mkOption {
-            type = with lib.types; lazyAttrsOf (lazyAttrsOf (listOf attrs));
+          aggregate = mkOption {
+            type = lazyAttrsOf (lazyAttrsOf (listOf attrs));
             description = "Collection of aggregate modules.";
             default = { };
           };
 
-          evaluation = lib.mkOption {
+          evaluation = mkOption {
             type = evaluator;
             description = "Collection of evaluation modules.";
             default = { };
@@ -176,7 +172,7 @@ let
 
       config =
         let
-          isComponent = value: lib.any (class: value ? ${class}) cfg.mod.classes;
+          isComponent = value: any (class: value ? ${class}) cfg.mod.classes;
           flattenedComponents = flattenComponents {
             tree = cfg.mod.component;
             isLeaf = isComponent;
@@ -196,9 +192,9 @@ let
                 imports = modules;
               };
 
-              components = lib.mapAttrs (
+              components = mapAttrs (
                 class: namedModules:
-                lib.mapAttrs (name: module: wrapModules name class "component" [ module ]) namedModules
+                mapAttrs (name: module: wrapModules name class "component" [ module ]) namedModules
               ) transposedComponents;
 
               aggregates =
@@ -213,25 +209,25 @@ let
                     (direct ++ nested);
 
                   aggregates = transpose (
-                    lib.mapAttrs (
+                    mapAttrs (
                       name: aggregate:
                       let
                         components = componentsFor aggregate;
                       in
-                      lib.mapAttrs (class: modules: wrapModules name class "aggregate" modules) (lib.zipAttrs components)
+                      mapAttrs (class: modules: wrapModules name class "aggregate" modules) (zipAttrs components)
                     ) cfg.mod.aggregate
                   );
                 in
                 aggregates;
 
             in
-            lib.attrsets.recursiveUpdate components aggregates;
+            attrsets.recursiveUpdate components aggregates;
         };
     };
 
   component = {
     inherit implementation;
-    dependencies = with inputs.self.components; [
+    dependencies = with local.inputs.self.components; [
       nixology.flake.modules
     ];
   };

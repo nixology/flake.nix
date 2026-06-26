@@ -1,12 +1,13 @@
-{ config, inputs, ... }:
+local@{ ... }:
 let
-  inherit (config.partitions.schemas.extraInputs) flake-schemas;
+  inherit (local.config.partitions.schemas.extraInputs) flake-schemas;
 
   implementation =
-    { lib, ... }:
+    with local.lib;
+    with types;
     {
-      options.flake.darwinConfigurations = lib.mkOption {
-        type = lib.types.lazyAttrsOf lib.types.raw;
+      options.flake.darwinConfigurations = mkOption {
+        type = lazyAttrsOf raw;
         default = { };
         description = ''
           Instantiated Darwin configurations. Used by `darwin-rebuild`.
@@ -14,7 +15,7 @@ let
           `darwinConfigurations` is for specific machines. For reusable
           configurations, expose modules through `darwinModules` instead.
         '';
-        example = lib.literalExpression ''
+        example = literalExpression ''
           {
             my-machine = inputs.nix-darwin.lib.darwinSystem {
               modules = [ ./configuration.nix ];
@@ -34,7 +35,7 @@ in
     nixology.flake.darwinConfigurations = {
       inherit implementation;
 
-      dependencies = with inputs.self.components; [
+      dependencies = with local.inputs.self.components; [
         nixology.core.schemas
       ];
 

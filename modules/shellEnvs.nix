@@ -1,9 +1,9 @@
 {
   partitions.development.module = {
     perSystem =
-      { config, ... }:
+      module@{ ... }:
       {
-        shellEnvs.default = config.shellEnvs.nix;
+        shellEnvs.default = module.config.shellEnvs.nix;
       };
   };
 }

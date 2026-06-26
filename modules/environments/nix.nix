@@ -1,32 +1,28 @@
-{ inputs, ... }:
+local@{ ... }:
 let
   implementation = {
     perSystem =
-      {
-        config,
-        lib,
-        pkgs,
-        ...
-      }:
+      module@{ pkgs, ... }:
+      with module.lib;
       {
         shellEnvs.nix.packages = [
           pkgs.nix-output-monitor
         ];
 
         treefmt.programs = {
-          nixfmt.enable = lib.mkDefault true;
-          deadnix.enable = lib.mkDefault true;
-          zizmor.enable = lib.mkDefault true;
+          nixfmt.enable = mkDefault true;
+          deadnix.enable = mkDefault true;
+          zizmor.enable = mkDefault true;
 
           nixf-diagnose = {
-            enable = lib.mkDefault true;
-            excludes = lib.mkDefault [
-              config.treefmt.projectRootFile
+            enable = mkDefault true;
+            excludes = mkDefault [
+              module.config.treefmt.projectRootFile
             ];
           };
 
           yamlfmt = {
-            enable = lib.mkDefault true;
+            enable = mkDefault true;
             settings.formatter = {
               type = "basic";
               retain_line_breaks = true;
@@ -52,7 +48,7 @@ in
     nixology.environments.nix = {
       inherit implementation;
 
-      dependencies = with inputs.self.components; [
+      dependencies = with local.inputs.self.components; [
         nixology.extra.shellEnvs
         nixology.tools.treefmt
       ];

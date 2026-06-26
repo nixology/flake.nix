@@ -1,6 +1,6 @@
-{ config, inputs, ... }:
+local@{ ... }:
 let
-  inherit (config.partitions.schemas.extraInputs) flake-schemas;
+  inherit (local.config.partitions.schemas.extraInputs) flake-schemas;
 
   descriptions = {
     apps = "runnable programs";
@@ -19,7 +19,7 @@ let
     let
       implementation = {
         imports = [
-          "${inputs.core.inputs.flake-parts}/modules/${name}.nix"
+          "${local.inputs.core.inputs.flake-parts}/modules/${name}.nix"
         ];
 
         config.flake.schemas.${name} = flake-schemas.schemas.${name};
@@ -28,7 +28,7 @@ let
     {
       inherit implementation;
 
-      dependencies = with inputs.self.components; [
+      dependencies = with local.inputs.self.components; [
         nixology.core.schemas
       ];
 

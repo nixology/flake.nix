@@ -1,12 +1,13 @@
-{ config, inputs, ... }:
+local@{ ... }:
 let
-  inherit (config.partitions.schemas.extraInputs) flake-schemas;
+  inherit (local.config.partitions.schemas.extraInputs) flake-schemas;
 
   implementation =
-    { lib, ... }:
+    with local.lib;
+    with types;
     {
-      options.flake.homeConfigurations = lib.mkOption {
-        type = lib.types.lazyAttrsOf lib.types.raw;
+      options.flake.homeConfigurations = mkOption {
+        type = lazyAttrsOf raw;
         default = { };
         description = ''
           Instantiated Home Manager configurations. Used by `home-manager`.
@@ -14,7 +15,7 @@ let
           `homeConfigurations` is for specific users. For reusable
           configurations, expose modules through `homeModules` instead.
         '';
-        example = lib.literalExpression ''
+        example = literalExpression ''
           {
             alice = inputs.home-manager.lib.homeManagerConfiguration {
               pkgs = import inputs.nixpkgs { system = "x86_64-linux"; };
@@ -41,7 +42,7 @@ in
     nixology.flake.homeConfigurations = {
       inherit implementation;
 
-      dependencies = with inputs.self.components; [
+      dependencies = with local.inputs.self.components; [
         nixology.core.schemas
       ];
 

@@ -18,26 +18,46 @@
     },
     "core": {
       "inputs": {
+        "default": "default",
         "flake-parts": "flake-parts",
         "nixpkgs": [
           "main",
           "core",
-          "nixpkgs-unstable",
+          "default",
           "channel"
-        ],
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        ]
       },
       "locked": {
-        "lastModified": 1781799569,
-        "narHash": "sha256-yHYqZ0OKwRHwYxfUyuEAyt6svj/5GS0UDBMOOJUpsE0=",
+        "lastModified": 1782519806,
+        "narHash": "sha256-cYBaxIhzVDyyHoKW+/Z0hAsBb4GrJ/Ug1TVMvw1/QJo=",
         "owner": "nixology",
         "repo": "core.nix",
-        "rev": "99e17cc68b9c8df2b3247bb93d1307348bad2c25",
+        "rev": "bca999191963b1198f190aa135b458a623f46456",
         "type": "github"
       },
       "original": {
         "owner": "nixology",
         "repo": "core.nix",
+        "type": "github"
+      }
+    },
+    "default": {
+      "inputs": {
+        "channel": "channel"
+      },
+      "locked": {
+        "dir": "nixpkgs-unstable",
+        "lastModified": 1781798631,
+        "narHash": "sha256-TFnCx40VNHLwA+gS3Tb6HW7do3aZijyVp/H2FV4rSz4=",
+        "owner": "nixology",
+        "repo": "channels.nix",
+        "rev": "01b2cfe422ec424fdfa4312a1655f2bd4ac7b326",
+        "type": "github"
+      },
+      "original": {
+        "dir": "nixpkgs-unstable",
+        "owner": "nixology",
+        "repo": "channels.nix",
         "type": "github"
       }
     },
@@ -146,26 +166,6 @@
       "original": {
         "owner": "nix-community",
         "repo": "nixpkgs.lib",
-        "type": "github"
-      }
-    },
-    "nixpkgs-unstable": {
-      "inputs": {
-        "channel": "channel"
-      },
-      "locked": {
-        "dir": "nixpkgs-unstable",
-        "lastModified": 1781798631,
-        "narHash": "sha256-TFnCx40VNHLwA+gS3Tb6HW7do3aZijyVp/H2FV4rSz4=",
-        "owner": "nixology",
-        "repo": "channels.nix",
-        "rev": "01b2cfe422ec424fdfa4312a1655f2bd4ac7b326",
-        "type": "github"
-      },
-      "original": {
-        "dir": "nixpkgs-unstable",
-        "owner": "nixology",
-        "repo": "channels.nix",
         "type": "github"
       }
     },

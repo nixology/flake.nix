@@ -1,10 +1,10 @@
-{ config, inputs, ... }:
+local@{ ... }:
 let
-  inherit (config.partitions.schemas.extraInputs) flake-schemas;
+  inherit (local.config.partitions.schemas.extraInputs) flake-schemas;
 
   implementation = {
     imports = [
-      inputs.core.inputs.flake-parts.flakeModules.bundlers
+      local.inputs.core.inputs.flake-parts.flakeModules.bundlers
     ];
 
     config.flake.schemas = {
@@ -13,12 +13,12 @@ let
   };
 
   check =
-    { config, ... }:
+    module@{ ... }:
     {
-      perSystem = config.flake.lib.mkComponentCheck {
+      perSystem = local.config.flake.lib.mkComponentCheck {
         name = "nixology-flake-bundlers";
-        component = with inputs.self.components; nixology.flake.bundlers;
-        inherit config;
+        component = with local.inputs.self.components; nixology.flake.bundlers;
+        inherit (module) config;
       };
     };
 in
@@ -31,7 +31,7 @@ in
     nixology.flake.bundlers = {
       inherit implementation;
 
-      dependencies = with inputs.self.components; [
+      dependencies = with local.inputs.self.components; [
         nixology.core.transposition
       ];
 

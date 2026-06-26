@@ -1,16 +1,17 @@
-{ config, inputs, ... }:
+local@{ ... }:
 let
-  inherit (config.partitions.schemas.extraInputs) flake-schemas;
-  moduleLocation = "${inputs.self.outPath}/flake.nix";
+  inherit (local.config.partitions.schemas.extraInputs) flake-schemas;
+  moduleLocation = "${local.inputs.self.outPath}/flake.nix";
 
   implementation =
-    { lib, ... }:
+    with local.lib;
+    with types;
     {
-      options.flake.homeModules = lib.mkOption {
-        type = lib.types.lazyAttrsOf lib.types.deferredModule;
+      options.flake.homeModules = mkOption {
+        type = lazyAttrsOf deferredModule;
         default = { };
 
-        apply = lib.mapAttrs (
+        apply = mapAttrs (
           name: module: {
             _class = "home";
             _file = "${moduleLocation}#homeModules.${name}";
@@ -25,7 +26,7 @@ let
           other home-manager modules.
         '';
 
-        example = lib.literalExpression ''
+        example = literalExpression ''
           {
             bash = { pkgs, ... }: {
               programs.bash = {
@@ -49,7 +50,7 @@ in
     nixology.flake.homeModules = {
       inherit implementation;
 
-      dependencies = with inputs.self.components; [
+      dependencies = with local.inputs.self.components; [
         nixology.core.schemas
       ];
 

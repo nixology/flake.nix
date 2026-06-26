@@ -1,16 +1,17 @@
-{ config, inputs, ... }:
+local@{ ... }:
 let
-  inherit (config.partitions.schemas.extraInputs) flake-schemas;
-  moduleLocation = "${inputs.self.outPath}/flake.nix";
+  inherit (local.config.partitions.schemas.extraInputs) flake-schemas;
+  moduleLocation = "${local.inputs.self.outPath}/flake.nix";
 
   implementation =
-    { lib, ... }:
+    with local.lib;
+    with types;
     {
-      options.flake.darwinModules = lib.mkOption {
-        type = lib.types.lazyAttrsOf lib.types.deferredModule;
+      options.flake.darwinModules = mkOption {
+        type = lazyAttrsOf deferredModule;
         default = { };
 
-        apply = lib.mapAttrs (
+        apply = mapAttrs (
           name: module: {
             _class = "darwin";
             _file = "${moduleLocation}#darwinModules.${name}";
@@ -25,7 +26,7 @@ let
           other nix-darwin modules.
         '';
 
-        example = lib.literalExpression ''
+        example = literalExpression ''
           {
             configuration = { pkgs, ... }: {
               environment.systemPackages = [
@@ -49,7 +50,7 @@ in
     nixology.flake.darwinModules = {
       inherit implementation;
 
-      dependencies = with inputs.self.components; [
+      dependencies = with local.inputs.self.components; [
         nixology.core.schemas
       ];
 

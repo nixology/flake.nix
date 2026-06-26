@@ -1,7 +1,7 @@
-{ inputs, ... }:
+local@{ ... }:
 {
   imports =
-    with inputs.core.components;
+    with local.inputs.core.components;
     map (component: component.module) [
       nixology.core.components
       nixology.core.lib

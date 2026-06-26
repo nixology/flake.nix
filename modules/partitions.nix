@@ -1,11 +1,12 @@
-{ lib, ... }:
+local@{ ... }:
+with local.lib;
 let
   development =
     let
       partition = "development";
     in
     {
-      partitionedAttrs = lib.genAttrs [ "checks" "devShells" "formatter" ] (_: partition);
+      partitionedAttrs = genAttrs [ "checks" "devShells" "formatter" ] (_: partition);
       partitions.${partition}.extraInputsFlake = ../partitions/${partition};
     };
 
@@ -14,7 +15,7 @@ let
       partition = "schemas";
     in
     {
-      partitionedAttrs = lib.genAttrs [ "schemas" ] (_: partition);
+      partitionedAttrs = genAttrs [ "schemas" ] (_: partition);
       partitions.${partition}.extraInputsFlake = ../partitions/${partition};
     };
 
