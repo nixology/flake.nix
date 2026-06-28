@@ -8,7 +8,7 @@ let
     ];
 
     config.flake.schemas = {
-      inherit (flake-schemas.schemas) bundlers;
+      inherit (flake-schemas.exportedSchemas) bundlers;
     };
   };
 

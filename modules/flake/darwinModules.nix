@@ -41,7 +41,7 @@ let
       };
 
       config.flake.schemas = {
-        inherit (flake-schemas.schemas) darwinModules;
+        inherit (flake-schemas.exportedSchemas) darwinModules;
       };
     };
 in

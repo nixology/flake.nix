@@ -22,7 +22,7 @@ let
           "${local.inputs.core.inputs.flake-parts}/modules/${name}.nix"
         ];
 
-        config.flake.schemas.${name} = flake-schemas.schemas.${name};
+        config.flake.schemas.${name} = flake-schemas.exportedSchemas.${name};
       };
     in
     {

@@ -41,7 +41,7 @@ let
       };
 
       config.flake.schemas = {
-        inherit (flake-schemas.schemas) homeModules;
+        inherit (flake-schemas.exportedSchemas) homeModules;
       };
     };
 in

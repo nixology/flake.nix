@@ -33,7 +33,7 @@ let
       };
 
       config.flake.schemas = {
-        inherit (flake-schemas.schemas) homeConfigurations;
+        inherit (flake-schemas.exportedSchemas) homeConfigurations;
       };
     };
 in

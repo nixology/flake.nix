@@ -26,7 +26,7 @@ let
       };
 
       config.flake.schemas = {
-        inherit (flake-schemas.schemas) darwinConfigurations;
+        inherit (flake-schemas.exportedSchemas) darwinConfigurations;
       };
     };
 in
