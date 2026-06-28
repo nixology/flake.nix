@@ -1,6 +1,9 @@
 local@{ ... }:
-with local.lib;
 let
+  inherit (local.lib)
+    genAttrs
+    ;
+
   development =
     let
       partition = "development";

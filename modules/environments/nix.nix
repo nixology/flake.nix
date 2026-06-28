@@ -1,9 +1,12 @@
 local@{ ... }:
 let
+  inherit (local.lib)
+    mkDefault
+    ;
+
   implementation = {
     perSystem =
       module@{ pkgs, ... }:
-      with module.lib;
       {
         shellEnvs.nix.packages = [
           pkgs.nix-output-monitor

@@ -1,49 +1,58 @@
 local@{ ... }:
 let
+  inherit (local.lib)
+    mapAttrs
+    mkOption
+    types
+    ;
+
+  inherit (types)
+    lazyAttrsOf
+    deferredModule
+    literalExpression
+    ;
+
   inherit (local.config.partitions.schemas.extraInputs) flake-schemas;
   moduleLocation = "${local.inputs.self.outPath}/flake.nix";
 
-  implementation =
-    with local.lib;
-    with types;
-    {
-      options.flake.darwinModules = mkOption {
-        type = lazyAttrsOf deferredModule;
-        default = { };
+  implementation = {
+    options.flake.darwinModules = mkOption {
+      type = lazyAttrsOf deferredModule;
+      default = { };
 
-        apply = mapAttrs (
-          name: module: {
-            _class = "darwin";
-            _file = "${moduleLocation}#darwinModules.${name}";
-            imports = [ module ];
-          }
-        );
+      apply = mapAttrs (
+        name: module: {
+          _class = "darwin";
+          _file = "${moduleLocation}#darwinModules.${name}";
+          imports = [ module ];
+        }
+      );
 
-        description = ''
-          Darwin modules.
+      description = ''
+        Darwin modules.
 
-          Use this for reusable Darwin configuration, service modules, and
-          other nix-darwin modules.
-        '';
+        Use this for reusable Darwin configuration, service modules, and
+        other nix-darwin modules.
+      '';
 
-        example = literalExpression ''
-          {
-            configuration = { pkgs, ... }: {
-              environment.systemPackages = [
-                pkgs.vim
-                pkgs.wget
-              ];
+      example = literalExpression ''
+        {
+          configuration = { pkgs, ... }: {
+            environment.systemPackages = [
+              pkgs.vim
+              pkgs.wget
+            ];
 
-              programs.zsh.enable = true;
-            };
-          }
-        '';
-      };
-
-      config.flake.schemas = {
-        inherit (flake-schemas.exportedSchemas) darwinModules;
-      };
+            programs.zsh.enable = true;
+          };
+        }
+      '';
     };
+
+    config.flake.schemas = {
+      inherit (flake-schemas.exportedSchemas) darwinModules;
+    };
+  };
 in
 {
   flake.components = {

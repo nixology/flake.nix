@@ -1,9 +1,27 @@
 local@{ ... }:
 let
-  implementation = { flake-parts-lib, ... }: with local.lib;
+  inherit (local.lib)
+    mapAttrs
+    mkIf
+    mkOption
+    types
+    ;
+
+  inherit (types)
+    anything
+    lazyAttrsOf
+    lines
+    listOf
+    literalExpression
+    package
+    submodule
+    ;
+
+  implementation =
+    { flake-parts-lib, ... }:
     {
       options.perSystem = flake-parts-lib.mkPerSystemOption (
-        { pkgs, ... }: with types;
+        { pkgs, ... }:
         {
           options.shellEnvs = mkOption {
             type = lazyAttrsOf (submodule {
@@ -48,7 +66,6 @@ let
 
       config.perSystem =
         module@{ pkgs, ... }:
-        with local.lib;
         mkIf (module.config.shellEnvs != { }) {
           devShells = mapAttrs (
             name: shellEnv:

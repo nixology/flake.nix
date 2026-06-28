@@ -1,41 +1,49 @@
 local@{ ... }:
 let
+  inherit (local.lib)
+    mkOption
+    types
+    ;
+
+  inherit (types)
+    lazyAttrsOf
+    literalExpression
+    raw
+    ;
+
   inherit (local.config.partitions.schemas.extraInputs) flake-schemas;
 
-  implementation =
-    with local.lib;
-    with types;
-    {
-      options.flake.homeConfigurations = mkOption {
-        type = lazyAttrsOf raw;
-        default = { };
-        description = ''
-          Instantiated Home Manager configurations. Used by `home-manager`.
+  implementation = {
+    options.flake.homeConfigurations = mkOption {
+      type = lazyAttrsOf raw;
+      default = { };
+      description = ''
+        Instantiated Home Manager configurations. Used by `home-manager`.
 
-          `homeConfigurations` is for specific users. For reusable
-          configurations, expose modules through `homeModules` instead.
-        '';
-        example = literalExpression ''
-          {
-            alice = inputs.home-manager.lib.homeManagerConfiguration {
-              pkgs = import inputs.nixpkgs { system = "x86_64-linux"; };
-              modules = [
-                inputs.self.homeModules.bash
-                {
-                  home.username = "alice";
-                  home.homeDirectory = "/home/alice";
-                  home.stateVersion = "25.11";
-                }
-              ];
-            };
-          }
-        '';
-      };
-
-      config.flake.schemas = {
-        inherit (flake-schemas.exportedSchemas) homeConfigurations;
-      };
+        `homeConfigurations` is for specific users. For reusable
+        configurations, expose modules through `homeModules` instead.
+      '';
+      example = literalExpression ''
+        {
+          alice = inputs.home-manager.lib.homeManagerConfiguration {
+            pkgs = import inputs.nixpkgs { system = "x86_64-linux"; };
+            modules = [
+              inputs.self.homeModules.bash
+              {
+                home.username = "alice";
+                home.homeDirectory = "/home/alice";
+                home.stateVersion = "25.11";
+              }
+            ];
+          };
+        }
+      '';
     };
+
+    config.flake.schemas = {
+      inherit (flake-schemas.exportedSchemas) homeConfigurations;
+    };
+  };
 in
 {
   flake.components = {

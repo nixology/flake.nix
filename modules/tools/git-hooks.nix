@@ -1,5 +1,9 @@
 local@{ ... }:
 let
+  inherit (local.lib)
+    mkIf
+    ;
+
   gitHooks = local.config.partitions.development.extraInputs.git-hooks;
 
   implementation = {
@@ -9,7 +13,6 @@ let
 
     perSystem =
       module@{ ... }:
-      with local.lib;
       let
         cfg = module.config.pre-commit;
       in

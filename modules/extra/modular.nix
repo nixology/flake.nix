@@ -1,8 +1,42 @@
 local@{ ... }:
 let
+  inherit (local.lib)
+    any
+    concatMap
+    concatMapStringsSep
+    concatStringsSep
+    elem
+    filter
+    foldl'
+    genAttrs
+    isAttrs
+    mapAttrs
+    mapAttrsToList
+    mergeAttrs
+    mkOption
+    unique
+    types
+    zipAttrs
+    ;
+
+  inherit (types)
+    addCheck
+    attrs
+    attrsOf
+    attrsets
+    deferredModule
+    functionTo
+    lazyAttrsOf
+    listOf
+    oneOf
+    raw
+    str
+    submodule
+    submoduleWith
+    ;
+
   implementation =
     module@{ ... }:
-    with local.lib;
     let
       cfg = module.config;
 
@@ -47,7 +81,6 @@ let
     in
     {
       options.mod =
-        with types;
         let
           data = submoduleWith {
             modules = [
