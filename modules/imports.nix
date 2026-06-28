@@ -1,10 +1,11 @@
 local@{ ... }:
+let
+  inherit (local.inputs.core.components) nixology;
+in
 {
-  imports =
-    with local.inputs.core.components;
-    map (component: component.module) [
-      nixology.core.components
-      nixology.core.lib
-      nixology.core.partitions
-    ];
+  imports = map (component: component.module) [
+    nixology.core.components
+    nixology.core.lib
+    nixology.core.partitions
+  ];
 }

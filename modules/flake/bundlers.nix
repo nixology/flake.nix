@@ -1,5 +1,7 @@
 local@{ ... }:
 let
+  inherit (local.inputs.self.components) nixology;
+
   inherit (local.config.partitions.schemas.extraInputs) flake-schemas;
 
   implementation = {
@@ -17,7 +19,7 @@ let
     {
       perSystem = local.config.flake.lib.mkComponentCheck {
         name = "nixology-flake-bundlers";
-        component = with local.inputs.self.components; nixology.flake.bundlers;
+        component = nixology.flake.bundlers;
         inherit (module) config;
       };
     };
@@ -31,7 +33,7 @@ in
     nixology.flake.bundlers = {
       inherit implementation;
 
-      dependencies = with local.inputs.self.components; [
+      dependencies = [
         nixology.core.transposition
       ];
 

@@ -1,5 +1,7 @@
 local@{ ... }:
 let
+  inherit (local.inputs.self.components) nixology;
+
   inherit (local.lib)
     mapAttrs
     mkIf
@@ -95,7 +97,7 @@ in
     nixology.extra.shellEnvs = {
       inherit implementation;
 
-      dependencies = with local.inputs.self.components; [
+      dependencies = [
         nixology.systems.default
         nixology.flake.devShells
       ];

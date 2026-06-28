@@ -1,5 +1,7 @@
 local@{ ... }:
 let
+  inherit (local.inputs.self.components) nixology;
+
   implementation = local.config.partitions.development.extraInputs.treefmt.flakeModule;
 
   partitionedImplementation = {
@@ -15,7 +17,7 @@ in
     nixology.tools.treefmt = {
       inherit implementation;
 
-      dependencies = with local.inputs.self.components; [
+      dependencies = [
         nixology.extra.shellEnvs
         nixology.flake.checks
         nixology.flake.formatter

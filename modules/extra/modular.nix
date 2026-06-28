@@ -1,5 +1,7 @@
 local@{ ... }:
 let
+  inherit (local.inputs.self.components) nixology;
+
   inherit (local.lib)
     any
     concatMap
@@ -260,7 +262,7 @@ let
 
   component = {
     inherit implementation;
-    dependencies = with local.inputs.self.components; [
+    dependencies = [
       nixology.flake.modules
     ];
   };

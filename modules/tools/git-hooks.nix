@@ -1,8 +1,8 @@
 local@{ ... }:
 let
-  inherit (local.lib)
-    mkIf
-    ;
+  inherit (local.inputs.self.components) nixology;
+
+  inherit (local.lib) mkIf;
 
   gitHooks = local.config.partitions.development.extraInputs.git-hooks;
 
@@ -37,7 +37,7 @@ in
     nixology.tools.git-hooks = {
       inherit implementation;
 
-      dependencies = with local.inputs.self.components; [
+      dependencies = [
         nixology.extra.shellEnvs
         nixology.systems.default
       ];

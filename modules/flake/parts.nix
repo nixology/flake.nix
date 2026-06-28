@@ -1,5 +1,7 @@
 local@{ ... }:
 let
+  inherit (local.inputs.self.components) nixology;
+
   inherit (local.config.partitions.schemas.extraInputs) flake-schemas;
 
   descriptions = {
@@ -28,7 +30,7 @@ let
     {
       inherit implementation;
 
-      dependencies = with local.inputs.self.components; [
+      dependencies = [
         nixology.core.schemas
       ];
 

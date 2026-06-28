@@ -1,5 +1,7 @@
 local@{ ... }:
 let
+  inherit (local.inputs.self.components) nixology;
+
   implementation = local.inputs.core.inputs.flake-parts.flakeModules.easyOverlay;
 
   check =
@@ -7,7 +9,7 @@ let
     {
       perSystem = local.config.flake.lib.mkComponentCheck {
         name = "nixology-extra-easyOverlay";
-        component = with local.inputs.self.components; nixology.extra.easyOverlay;
+        component = nixology.extra.easyOverlay;
         inherit (module) config;
       };
     };
@@ -21,7 +23,7 @@ in
     nixology.extra.easyOverlay = {
       inherit implementation;
 
-      dependencies = with local.inputs.self.components; [
+      dependencies = [
         nixology.flake.overlays
       ];
 

@@ -1,5 +1,7 @@
 local@{ ... }:
 let
+  inherit (local.inputs.self.components) nixology;
+
   inherit (local.lib)
     mkDefault
     ;
@@ -51,7 +53,7 @@ in
     nixology.environments.nix = {
       inherit implementation;
 
-      dependencies = with local.inputs.self.components; [
+      dependencies = [
         nixology.extra.shellEnvs
         nixology.tools.treefmt
       ];

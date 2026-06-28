@@ -1,5 +1,7 @@
 local@{ ... }:
 let
+  inherit (local.inputs.self.components) nixology;
+
   implementation = {
     imports = [
       local.inputs.core.inputs.flake-parts.flakeModules.modules
@@ -27,7 +29,7 @@ in
     nixology.flake.modules = {
       inherit implementation;
 
-      dependencies = with local.inputs.self.components; [
+      dependencies = [
         nixology.core.schemas
       ];
 
