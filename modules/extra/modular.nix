@@ -16,16 +16,15 @@ let
     mapAttrsToList
     mergeAttrs
     mkOption
-    unique
     types
+    unique
     zipAttrs
     ;
 
-  inherit (types)
+  inherit (local.lib.types)
     addCheck
     attrs
     attrsOf
-    attrsets
     deferredModule
     functionTo
     lazyAttrsOf
@@ -36,6 +35,8 @@ let
     submodule
     submoduleWith
     ;
+
+  inherit (local.lib.attrsets) recursiveUpdate;
 
   implementation =
     module@{ ... }:
@@ -98,7 +99,7 @@ let
                         - Define the value only once, with a single definition in a single module
                     '';
                   in
-                  lazyAttrsOf (unique { inherit message; } raw);
+                  lazyAttrsOf (types.unique { inherit message; } raw);
               }
             ];
           };
@@ -256,7 +257,7 @@ let
                 aggregates;
 
             in
-            attrsets.recursiveUpdate components aggregates;
+            recursiveUpdate components aggregates;
         };
     };
 

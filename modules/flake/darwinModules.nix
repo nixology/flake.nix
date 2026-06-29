@@ -5,10 +5,9 @@ let
   inherit (local.lib)
     mapAttrs
     mkOption
-    types
     ;
 
-  inherit (types)
+  inherit (local.lib.types)
     lazyAttrsOf
     deferredModule
     literalExpression

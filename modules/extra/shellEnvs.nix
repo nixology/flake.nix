@@ -6,10 +6,9 @@ let
     mapAttrs
     mkIf
     mkOption
-    types
     ;
 
-  inherit (types)
+  inherit (local.lib.types)
     anything
     lazyAttrsOf
     lines
