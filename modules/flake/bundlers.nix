@@ -2,11 +2,15 @@ local@{ ... }:
 let
   inherit (local.inputs.self.components) nixology;
 
+  inherit (local.inputs.core.lib) mkComponentCheck;
+
+  inherit (local.inputs.core.inputs) flake-parts;
+
   inherit (local.config.partitions.schemas.extraInputs) flake-schemas;
 
   implementation = {
     imports = [
-      local.inputs.core.inputs.flake-parts.flakeModules.bundlers
+      flake-parts.flakeModules.bundlers
     ];
 
     config.flake.schemas = {
@@ -17,7 +21,7 @@ let
   check =
     module@{ ... }:
     {
-      perSystem = local.config.flake.lib.mkComponentCheck {
+      perSystem = mkComponentCheck {
         name = "nixology-flake-bundlers";
         component = nixology.flake.bundlers;
         inherit (module) config;

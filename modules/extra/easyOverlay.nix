@@ -2,12 +2,14 @@ local@{ ... }:
 let
   inherit (local.inputs.self.components) nixology;
 
+  inherit (local.inputs.core.lib) mkComponentCheck;
+
   implementation = local.inputs.core.inputs.flake-parts.flakeModules.easyOverlay;
 
   check =
     module@{ ... }:
     {
-      perSystem = local.config.flake.lib.mkComponentCheck {
+      perSystem = mkComponentCheck {
         name = "nixology-extra-easyOverlay";
         component = nixology.extra.easyOverlay;
         inherit (module) config;
