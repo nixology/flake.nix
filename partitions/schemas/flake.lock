@@ -6,11 +6,11 @@
       },
       "locked": {
         "dir": "partitions/schemas",
-        "lastModified": 1790913428,
-        "narHash": "sha256-/86KI4D8p1wWCKvR112g+JdpMaOBgHLL/z5XymRcsIc=",
+        "lastModified": 1791172864,
+        "narHash": "sha256-BxICazaEAM2NUmR/B8GYmBpByIVZi/4EYQ40n8zDREI=",
         "owner": "nixology",
         "repo": "core.nix",
-        "rev": "878d5de969cd976aca0c41924419c102a650a8f3",
+        "rev": "f46577ab476001d5697b54216d036f0f10d8f096",
         "type": "github"
       },
       "original": {
